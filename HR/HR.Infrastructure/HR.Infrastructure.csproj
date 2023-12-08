@@ -13,6 +13,8 @@
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="14.0.0-p.15" />
     <PackageReference Include="HotChocolate.Data" Version="14.0.0-p.15" />
     <PackageReference Include="HotChocolate.Stitching.Redis" Version="13.7.1-preview.3" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">

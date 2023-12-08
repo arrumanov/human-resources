@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR.Service.Handlers.Users;
-public class ListWithFiltering
+public class List
 {
 	public class QueryHandler : IRequestHandler<UsersQuery, List<UserPayload>>
 	{

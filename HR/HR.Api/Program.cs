@@ -1,11 +1,17 @@
 using HR.Api.HttpHandler;
 using HR.Application.Graph.User.Query;
+using HR.Application.Graph.Resource.Query;
 using HR.Application.Queries.User;
 using HR.Infrastructure.AppSetting;
 using HR.Infrastructure.DataAccess;
 using HR.Service.Handlers.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using HR.Infrastructure.Services;
+using HR.Service.Services;
+using HR.Infrastructure.SearchEngine.Api;
+using HR.Infrastructure.SearchEngine.Impl;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +30,14 @@ builder.Services.AddCors(options =>
 			.WithOrigins("*");
 	});
 });
+
+builder.Services.AddTransient<ISearchService, SearchService>();
+//builder.Services.AddTransient<ISearchEngine, SearchEngine>();
+builder.Services.AddTransient<ISearchEngine, SearchEngine>(
+			provider => new SearchEngine(
+				Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!
+			)
+		);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -55,14 +69,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddMediatR(cfg =>
 {
 	cfg.RegisterServicesFromAssembly(typeof(UsersQuery).Assembly);
-	cfg.RegisterServicesFromAssembly(typeof(ListWithFiltering).Assembly);
+	cfg.RegisterServicesFromAssembly(typeof(List).Assembly);
 });
 
 builder.Services
 	.AddGraphQLServer()
 	.AddHttpRequestInterceptor<HttpRequestInterceptor>()
 	.AddAuthorization()
-	.AddQueryType<UserQuery>();
+	.AddQueryType()
+	.AddTypeExtension<ResourceQuery>()
+	.AddTypeExtension<UserQuery>();
 
 // Add services to the container.
 var app = builder.Build();
