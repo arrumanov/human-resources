@@ -22,6 +22,8 @@ public class ResourceQuery
 		{
 			Filters = input.Filters,
 			MainSort = input.MainSort,
+			Page = input.Page,
+			PageSize = input.PageSize
 		};
 		var payload = await mediator.Send(message, cancellationToken);
 		return payload;

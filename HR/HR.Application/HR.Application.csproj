@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Graph\Resource\Mutation\" />
     <Folder Include="Graph\User\Mutation\" />
   </ItemGroup>
 

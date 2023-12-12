@@ -2,6 +2,7 @@
 using HR.CrossCutting.Enum;
 using HR.CrossCutting.Extentions;
 using HR.Infrastructure.DataAccess;
+using HR.Infrastructure.Extensions;
 using HR.Infrastructure.SearchEngine.Api;
 using HR.Infrastructure.SearchEngine.Models;
 using HR.Infrastructure.Services;
@@ -250,19 +251,7 @@ public class SearchService : ISearchService
 	{
 		var objectKeyValue = new Dictionary<Guid, List<KeyValue>>();
 
-		var resources = await _context.Resources
-			//.Include(item => item.Translations)
-			//	.Include(item => item.CustomFieldValues)
-				//.Include(item => item.Position)
-				//.ThenInclude(p => p.Translations)
-				//.Include(item => item.Status)
-				//.ThenInclude(s => s.Translations)
-				//.Include(item => item.ResourceManager)
-				//.ThenInclude(rm => rm.Translations)
-				//.Include(item => item.PermissionsForObject)
-				//.ThenInclude(po => po.ObjectResource)
-				//.ThenInclude(or => or.Translations)
-				//.Include(item => item.ResourceColors)
+		var resources = await _context.Resources.GetFull()
 				.Where(item => objectsId.Contains(item.Id))
 				.ToListAsync();
 

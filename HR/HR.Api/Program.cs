@@ -12,6 +12,7 @@ using HR.Service.Services;
 using HR.Infrastructure.SearchEngine.Api;
 using HR.Infrastructure.SearchEngine.Impl;
 using System.Reflection;
+using HR.Application.Graph.Resource.Mutation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,7 +79,9 @@ builder.Services
 	.AddAuthorization()
 	.AddQueryType()
 	.AddTypeExtension<ResourceQuery>()
-	.AddTypeExtension<UserQuery>();
+	.AddTypeExtension<UserQuery>()
+	.AddMutationType()
+	.AddTypeExtension<ResourceMutation>();
 
 // Add services to the container.
 var app = builder.Build();

@@ -1,6 +1,8 @@
-﻿using HR.CrossCutting.Constants;
+﻿using FluentValidation;
+using HR.CrossCutting.Constants;
 using HR.CrossCutting.Enum;
 using HR.Domain.Utils.CustomFieldUtil;
+using HR.Domain.Validator;
 
 namespace HR.Domain.Model;
 public class Resource
@@ -90,6 +92,19 @@ public class Resource
 	public Resource(bool isActive, bool isExternal, string name, DateTime dateOfEmployment)
 		: this(Guid.NewGuid(), isActive, isExternal, name, dateOfEmployment)
 	{
+	}
+
+	public void Validate()
+	{
+		var validator = new ResourceValidator();
+
+		var validationResult = validator.Validate(this);
+
+		if (!validationResult.IsValid) 
+			throw new ValidationException(string.Join(";", validationResult.Errors
+				.Select(i => i.ErrorCode)
+				.Where(f => f != null)
+				.ToList()));
 	}
 
 	public string GetLocalizedName(EnumLanguage language = EnumLanguage.Default)

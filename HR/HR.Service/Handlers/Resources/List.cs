@@ -5,6 +5,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using HR.Infrastructure.Services;
 using HR.CrossCutting.Enum;
+using HR.Infrastructure.Extensions;
+using HR.Domain.Model;
+using System.Linq.Expressions;
 
 namespace HR.Service.Handlers.Resources;
 public class List
@@ -27,36 +30,27 @@ public class List
 		{
 			//var ids = await _context.Resources.Select(item => item.Id).ToListAsync();
 			//await _srvcSearch.BuildIndex(ids, SearchConst.ResourceIndex, ObjectType.Resource);
-			var filterItems = message.Filters[ObjectType.Resource];
+			var queryable = _context.Resources.GetAllData();
+
+			var filterItems = message.Filters![ObjectType.Resource];
 			var resourcesId = new List<Guid>();
+			Expression<Func<Resource, bool>> func = (item) => true;
 			if (filterItems.Count > 0)
 			{
 				resourcesId = _srvcSearch.GetResourcesId(filterItems);
+				func = (item) => resourcesId.Count > 0 ? resourcesId.Contains(item.Id) : true;
 			}
 
-			var resources = await _context.Resources
-				.Include(item => item.Translations)
-				.Include(item => item.CustomFieldValues)
-				.Include(item => item.Position)
-				.ThenInclude(p => p.Translations)
-				.Include(item => item.Status)
-				.ThenInclude(s => s.Translations)
-				.Include(item => item.ResourceManager)
-				.ThenInclude(rm => rm.Translations)
-				.Include(item => item.PermissionsForObject)
-				//.ThenInclude(po => po.ObjectResource)
-				//.ThenInclude(or => or.Translations)
-				.Include(item => item.ResourceColors)
-				.Where(item => resourcesId.Count > 0 ? resourcesId.Contains(item.Id) : true)
-				.OrderBy(item => item.Name)
-				.Take(10)
-				.AsNoTracking()
+			var resources = await queryable
+				.Where(func)
+				.Sort(message.MainSort)
+				.Paged(message.Page, message.PageSize)
 				.ToListAsync(cancellationToken);
 			var count = _context.Resources
-				.Where(item => resourcesId.Count > 0 ? resourcesId.Contains(item.Id) : true)
+				.Where(func)
 				.Count();
 
-			var list = resources.Select(item => new Resource
+			var list = resources.Select(item => new ResourcePayload
 			{
 				Id = item.Id,
 				Name = item.Name??string.Empty,
